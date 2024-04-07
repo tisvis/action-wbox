@@ -25,13 +25,17 @@ runs:
     - name: Install Dependencies
       shell: bash
       run: |
-        if [ ! -z "${{ inputs.tool-dependencies }}" -a "${{ inputs.tool-dependencies }}" != " " ]; then
-          echo "Updating apt package list..."
-          sudo apt-get update > /dev/null
-          echo "Installing dependencies: ${{ inputs.tool-dependencies }}"
-          sudo apt-get install -y ${{ inputs.tool-dependencies }} > /dev/null
+        if command -v sudo >/dev/null; then
+          if [ ! -z "${{ inputs.tool-dependencies }}" -a "${{ inputs.tool-dependencies }}" != " " ]; then
+            echo "Updating apt package list..."
+            sudo apt-get update > /dev/null
+            echo "Installing dependencies: ${{ inputs.tool-dependencies }}"
+            sudo apt-get install -y ${{ inputs.tool-dependencies }} > /dev/null
+          else
+            echo "No dependencies to install."
+          fi
         else
-          echo "No dependencies to install."
+          echo "sudo not available, skipping dependency installation."
         fi
 
     - name: Build ${{ inputs.tool-name }}
